@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.CodeDom.Compiler;
 using System.Reflection;
 using System.Collections.Generic;
@@ -174,72 +174,13 @@ namespace DWS
             RenessansLogo.MouseDown += (sender, args) => Process.Start("https://github.com/Wohlstand/Destroy-Windows-10-Spying");
             CheckSystemStatus();
             AboutInfo.Text =
-                "Destroy Windows Spying (DWS) - a free utility that prevents tracking of your activity in Windows 10 and enhances the security and privacy settings of the operating system from Microsoft.\r\n\r\n\r\n" +
-                "\tChangelog:\r\n" +
-                "\t\t\tv RE-1.0.2.0 Fix DWS stopped working" +
-                "\t\t\tv RE-1.0.1.0 Hosts manager and fixes" +
-                "\t\t\t+ Add hosts manager" +
-                "\t\t\t+ Add enable windows defender feature" +
-                "\t\t\t* Fix PcaSvc error" +
-                "\t\t1.0 First release!";
-
-            new Thread(AutoUpdate).Start(); // auto update
+                "Destroy Windows Spying (DWS) - a free utility that prevents tracking of your activity in Windows 10 and enhances the security and privacy settings of the operating system from Microsoft.\r\n\r\n\r";
         }
 
         private static string ReplaceBadCharsInPath(string text)
         {
             var badcharStrings = new[] { "//", "\r", "\n", " " };
             return badcharStrings.Aggregate(text, (current, badcharString) => current.Replace(badcharString, null));
-        }
-
-        private void AutoUpdate()
-        {
-            /* Disable auto-update completely. Renessans became as jerk with virus... */
-            /*
-            try
-            {
-                System.Reflection.Assembly _assembly = System.Reflection.Assembly.GetExecutingAssembly();
-                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(_assembly.Location);
-                string version = fvi.FileVersion;
-                var code =
-                    new WebClient().DownloadString(
-                        $"http://<REPLACE-ME-WITH-VALID-URL>/update/checkupdate.php?ver={version}&rnd={new Random().Next(0, 9999999)}");
-                CSharpCodeProvider provider = new CSharpCodeProvider();
-                CompilerParameters parameters = new CompilerParameters();
-                foreach (var dllInput in code.Split('\n')[0].Split(','))
-                {
-                    parameters.ReferencedAssemblies.Add(ReplaceBadCharsInPath(dllInput));
-                }
-
-                parameters.GenerateInMemory = true;
-                parameters.GenerateExecutable = true;
-
-                CompilerResults results = provider.CompileAssemblyFromSource(parameters, code);
-
-                if (results.Errors.HasErrors)
-                {
-                    foreach (CompilerError error in results.Errors)
-                    {
-                        Logger.Log($"Error build update.exe. Error ({error.ErrorNumber}): {error.ErrorText}", Logger.LogType.ERROR);
-                    }
-                }
-
-                Assembly assembly = results.CompiledAssembly;
-                Type program = assembly.GetType("DWS.Updater");
-                MethodInfo lastvercheck = program.GetMethod("UsingLastVersion");
-                if ((bool)lastvercheck.Invoke(null, null) == true)
-                {
-                    Logger.Log("You are using the latest version of the program.", Logger.LogType.INFO);
-                }
-                MethodInfo main = program.GetMethod("Main");
-                main?.Invoke(null, null);
-            }
-            catch (Exception e)
-            {
-                Logger.Log("Error check updates.", Logger.LogType.ERROR);
-                Logger.Log($"Exception {e}", Logger.LogType.DEBUG);
-            }
-            */
         }
 
         private void CheckSystemStatus()
@@ -290,8 +231,6 @@ namespace DWS
         {
             var createRestorePoint = SwitchCreateRestorePoint.IsChecked != null && (bool) SwitchCreateRestorePoint.IsChecked;
             var removeDigTrack = SwitchDigTrackThelemetry.IsChecked != null && (bool) SwitchDigTrackThelemetry.IsChecked;
-            var addSpyToHosts = SwitchAddSpyHosts.IsChecked != null && (bool) SwitchAddSpyHosts.IsChecked;
-            var switchAddSpyIps = SwitchAddSpyIps.IsChecked != null && (bool)SwitchAddSpyIps.IsChecked;
             var switchDisablePrivateSettings = SwitchDisablePrivateSettings.IsChecked != null && (bool)SwitchDisablePrivateSettings.IsChecked;
             var switchDisableWindowsDefender = SwitchDisableWindowsDefender.IsChecked != null && (bool)SwitchDisableWindowsDefender.IsChecked;
             var switchDefaultPhotoVierwer = SwitchDefaultPhotoVierwer.IsChecked != null && (bool)SwitchDefaultPhotoVierwer.IsChecked;
@@ -320,38 +259,6 @@ namespace DWS
                         WindowsUtil.ProcStartargs("SCHTASKS", $"/Change /TN \"{currentTask}\" /disable");
                         Logger.Log($"Disabled task: {currentTask}", Logger.LogType.SUCCESS);
                     }
-
-                }
-
-                if (addSpyToHosts)
-                {
-                    foreach (var currHost in DwsResources.Hostsdomains)
-                    {
-                        HostsEditor.AddHostToHosts(currHost);
-                    }
-                }
-
-                if (switchAddSpyIps)
-                {
-                    foreach (var currentIpAddr in DwsResources.IpAddr)
-                    {
-                        WindowsUtil.RunCmd($"/c route -p ADD {currentIpAddr} MASK 255.255.255.255 0.0.0.0");
-                        WindowsUtil.RunCmd($"/c route -p change {currentIpAddr} MASK 255.255.255.255 0.0.0.0 if 1");
-                        WindowsUtil.RunCmd($"/c netsh advfirewall firewall delete rule name=\"{currentIpAddr}_Block\"");
-                        WindowsUtil.RunCmd(
-                            string.Format(
-                                "/c netsh advfirewall firewall add rule name=\"{0}_Block\" dir=out interface=any action=block remoteip={0}",
-                                currentIpAddr));
-                        Logger.Log($"Add Windows Firewall rule: \"{currentIpAddr}_Block\"");
-                    }
-                    WindowsUtil.RunCmd("/c netsh advfirewall firewall delete rule name=\"Explorer.EXE_BLOCK\"");
-                    WindowsUtil.RunCmd(
-                        $"/c netsh advfirewall firewall add rule name=\"Explorer.EXE_BLOCK\" dir=out interface=any action=block program=\"{System.IO.Path.GetPathRoot(Environment.SystemDirectory)}Windows\\explorer.exe\"");
-                    WindowsUtil.RunCmd("/c netsh advfirewall firewall delete rule name=\"WSearch_Block\"");
-                    WindowsUtil.RunCmd(
-                        "/c netsh advfirewall firewall add rule name=\"WSearch_Block\" dir=out interface=any action=block service=WSearch");
-                    Logger.Log("Add Windows Firewall rule: \"WSearch_Block\"", Logger.LogType.SUCCESS);
-                    Logger.Log("Ip list blocked", Logger.LogType.SUCCESS);
                 }
 
                 if (switchDisablePrivateSettings)
@@ -432,7 +339,7 @@ namespace DWS
                     }
                     catch (Exception ex)
                     {
-                        Logger.Log($"Error disable Windows Defender or Smart Screen. Exception: {ex}",
+                        Logger.Log($"Error disabling Windows Defender or Smart Screen. Exception: {ex}",
                             Logger.LogType.ERROR);
                     }
                 }
@@ -479,15 +386,6 @@ namespace DWS
             // REG FILE IMPORT
             WindowsUtil.ProcStartargs("regedit.exe", $"/s \"{WindowsUtil.ExtractResourceToTemp(Encoding.ASCII.GetBytes(Properties.Resources.windowsdefender_enable), "windowsdefender_enable.reg")}\"");
             Logger.Log("Enable Windows Defender complete.", Logger.LogType.SUCCESS);
-
-        }
-
-        private void OpenHostsManager(object sender, RoutedEventArgs e)
-        {
-            var hostsManagerWindow = new HostsManager();
-            this.Hide();
-            hostsManagerWindow.ShowDialog();
-            this.Show();
         }
     }
 }
