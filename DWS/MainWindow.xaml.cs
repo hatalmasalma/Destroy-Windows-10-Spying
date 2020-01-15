@@ -177,12 +177,6 @@ namespace DWS
                 "Destroy Windows Spying (DWS) - a free utility that prevents tracking of your activity in Windows 10 and enhances the security and privacy settings of the operating system from Microsoft.\r\n\r\n\r";
         }
 
-        private static string ReplaceBadCharsInPath(string text)
-        {
-            var badcharStrings = new[] { "//", "\r", "\n", " " };
-            return badcharStrings.Aggregate(text, (current, badcharString) => current.Replace(badcharString, null));
-        }
-
         private void CheckSystemStatus()
         {
             if (WindowsUtil.SystemRestore_Status() == 0)
