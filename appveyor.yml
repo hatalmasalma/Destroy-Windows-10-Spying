@@ -9,7 +9,7 @@ clone_folder: C:\_Repos\DWS
 build:
   parallel: true
   project: DWS.sln
-  verbosity: normal
+  verbosity: minimal
 
 after_build:
 - cmd: md DWS-Build
