@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -26,7 +26,9 @@ namespace DWS
                     lock (mainTextBoxBase)
                     {
                         if (instance == null)
+                        {
                             instance = new Logger();
+                        }
                     }
                 }
 
