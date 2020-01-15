@@ -171,7 +171,7 @@ namespace DWS
             };
             MinimizeButton.Click += (sender, args) => WindowState = WindowState.Minimized;
             CloseButton.Click += (sender, args) => Close();
-            RenessansLogo.MouseDown += (sender, args) => Process.Start("https://github.com/Wohlstand/Destroy-Windows-10-Spying");
+            RenessansLogo.MouseDown += (sender, args) => Process.Start("https://github.com/RDIL/Destroy-Windows-10-Spying");
             CheckSystemStatus();
             AboutInfo.Text =
                 "Destroy Windows Spying (DWS) - a free utility that prevents tracking of your activity in Windows 10 and enhances the security and privacy settings of the operating system from Microsoft.\r\n\r\n\r";
