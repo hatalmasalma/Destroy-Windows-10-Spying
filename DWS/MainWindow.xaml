@@ -54,7 +54,6 @@
                         <CheckBox Name="SwitchDigTrackThelemetry" IsChecked="True" Content="Delete Keylogger and Telemetry" Height="35"/>
                         <CheckBox Name="SwitchDisablePrivateSettings" IsChecked="True" Content="Disable private settings" Height="35"/>
                         <CheckBox Name="SwitchDisableWindowsDefender" IsChecked="True" Content="Disable Windows Defender" Height="35"/>
-                        <CheckBox Name="SwitchDefaultPhotoVierwer" IsChecked="True" Content="Set default photo viewer" Height="35"/>
                     </StackPanel>
                     <StackPanel Grid.Column="2">
                         <Label Content="Other Windows Tweaks" FontWeight="Bold"/>

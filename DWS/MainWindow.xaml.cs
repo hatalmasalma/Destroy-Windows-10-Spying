@@ -227,7 +227,6 @@ namespace DWS
             var removeDigTrack = SwitchDigTrackThelemetry.IsChecked != null && (bool) SwitchDigTrackThelemetry.IsChecked;
             var switchDisablePrivateSettings = SwitchDisablePrivateSettings.IsChecked != null && (bool)SwitchDisablePrivateSettings.IsChecked;
             var switchDisableWindowsDefender = SwitchDisableWindowsDefender.IsChecked != null && (bool)SwitchDisableWindowsDefender.IsChecked;
-            var switchDefaultPhotoVierwer = SwitchDefaultPhotoVierwer.IsChecked != null && (bool)SwitchDefaultPhotoVierwer.IsChecked;
             new Thread(() =>
             {
                 EnableOrDisableWindow(false);
@@ -338,17 +337,6 @@ namespace DWS
                     }
                 }
 
-                if (switchDefaultPhotoVierwer)
-                {
-                    WindowsUtil.SetRegValueHkcu(@"Software\Classes\.ico", null, "PhotoViewer.FileAssoc.Tiff", RegistryValueKind.String);
-                    WindowsUtil.SetRegValueHkcu(@"Software\Classes\.tiff", null, "PhotoViewer.FileAssoc.Tiff", RegistryValueKind.String);
-                    WindowsUtil.SetRegValueHkcu(@"Software\Classes\.bmp", null, "PhotoViewer.FileAssoc.Tiff", RegistryValueKind.String);
-                    WindowsUtil.SetRegValueHkcu(@"Software\Classes\.png", null, "PhotoViewer.FileAssoc.Tiff", RegistryValueKind.String);
-                    WindowsUtil.SetRegValueHkcu(@"Software\Classes\.gif", null, "PhotoViewer.FileAssoc.Tiff", RegistryValueKind.String);
-                    WindowsUtil.SetRegValueHkcu(@"Software\Classes\.jpeg", null, "PhotoViewer.FileAssoc.Tiff", RegistryValueKind.String);
-                    WindowsUtil.SetRegValueHkcu(@"Software\Classes\.jpg", null, "PhotoViewer.FileAssoc.Tiff", RegistryValueKind.String);
-                    Logger.Log("Set Default PhotoViewer complete.", Logger.LogType.SUCCESS);
-                }
                 Logger.Log("COMPLETE.", Logger.LogType.SUCCESS);
                 EnableOrDisableWindow(true);
                 if (MessageBox.Show("Complete.\r\nRestart system now?", "Ask", MessageBoxButton.YesNo,
@@ -357,22 +345,6 @@ namespace DWS
                     Process.Start("shutdown.exe", "-r -t 0");
                 }
             }).Start();
-        }
-
-        private void ButtonDisableWindowsUpdate_Click(object sender, RoutedEventArgs e)
-        {
-            WindowsUtil.RunCmd("/c reg add \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\WindowsUpdate\\Auto Update\" /v AUOptions /t REG_DWORD /d 1 /f");
-            WindowsUtil.RunCmd("/c net stop wuauserv");
-            WindowsUtil.RunCmd("/c sc config wuauserv start=disabled");
-            Logger.Log("Windows update disabled.", Logger.LogType.INFO);
-        }
-
-        private void ButtonEnableWindowsUpdate_Click(object sender, RoutedEventArgs e)
-        {
-            WindowsUtil.RunCmd("/c reg add \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\WindowsUpdate\\Auto Update\" /v AUOptions /t REG_DWORD /d 3 /f");
-            WindowsUtil.RunCmd("/c net start wuauserv");
-            WindowsUtil.RunCmd("/c sc config wuauserv start=auto");
-            Logger.Log("Windows update enabled.", Logger.LogType.INFO);
         }
 
         private void EnableWindowsDefenderClick(object sender, RoutedEventArgs e)
